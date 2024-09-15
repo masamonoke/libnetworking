@@ -63,6 +63,10 @@ MU_TEST(test_handle) { // NOLINT(readability-function-cognitive-complexity)
 		mu_check(resp == 1);
 		_exit(0);
 	} else {
+		struct timespec ts;
+		ts.tv_sec = 1;
+		ts.tv_nsec = 0;
+		nanosleep(&ts, NULL); // sleep to avoid recv deadlock
 		mu_check(networking_server_pthread_update(server, NULL) == NETWORKING_SERVER_OK);
 	}
 	wait(NULL);
