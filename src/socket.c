@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <unistd.h>
 #include <errno.h>
+#include <stdlib.h>
 
 __attribute__((warn_unused_result))
 bool networking_socket_create_client(int* client_fd, const char* address, const char* port, int type) {
@@ -111,4 +112,25 @@ bool networking_socket_create_server(int* server_fd, const char* port, int type)
 	}
 
 	return true;
+}
+
+void networking_socket_get_remote_ip(int fd, char buf[]) {
+struct sockaddr_storage addr;
+    socklen_t addr_len = sizeof(addr);
+    char ip_str[INET6_ADDRSTRLEN];
+
+    if (getpeername(fd, (struct sockaddr *)&addr, &addr_len) == -1) {
+        perror("getpeername failed");
+        return;
+    }
+
+    if (addr.ss_family == AF_INET) {
+        struct sockaddr_in *s = (struct sockaddr_in *)&addr;
+        inet_ntop(AF_INET, &s->sin_addr, ip_str, sizeof(ip_str));
+    } else if (addr.ss_family == AF_INET6) {
+        struct sockaddr_in6 *s = (struct sockaddr_in6 *)&addr;
+        inet_ntop(AF_INET6, &s->sin6_addr, ip_str, sizeof(ip_str));
+    }
+
+	memcpy(buf, ip_str, strlen(ip_str) + 1);
 }

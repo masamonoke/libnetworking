@@ -15,3 +15,5 @@ bool networking_socket_create_client(int* client_fd, const char* address, const 
 // Otherwise *server_fd is -1 and returns false.
 __attribute__((warn_unused_result, nonnull(1, 2)))
 bool networking_socket_create_server(int* server_fd, const char* port, int type);
+
+void networking_socket_get_remote_ip(int fd, char buf[]);
